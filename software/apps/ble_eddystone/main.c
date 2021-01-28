@@ -1,6 +1,6 @@
-// BLE Advertisement Raw app
+// BLE Eddystone app
 //
-// Sends a BLE advertisement with raw bytes
+// Eddystone advertising application
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -36,15 +36,15 @@ int main(void) {
   // Note: simple BLE is our own library. You can find it in `nrf5x-base/lib/simple_ble/`
   simple_ble_app = simple_ble_init(&ble_config);
 
-  // Start Advertising
-  // modified name (New Name!)
-  // add TX power level (1dBm)
-  uint8_t ble_data[BLE_GAP_ADV_SET_DATA_SIZE_MAX] = {
-    0x02, 0x01, 0x06,
-    0x0A, 0x09, 0x4e, 0x65, 0x77, 0x20, 0x4e, 0x61, 0x6d, 0x65, 0x21,
-    0x02, 0x0A, 0x01};
+  /*
+  *  Eddystone advertisement
+  */
+  // url
+  const char *url = "github.com";
 
-  simple_ble_adv_raw(ble_data, 17);
+  // eddystone
+  simple_ble_es_with_name(url);
+
   printf("Started BLE advertisements\n");
 
   while(1) {

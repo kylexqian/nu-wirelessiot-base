@@ -81,7 +81,7 @@ void ble_evt_adv_report(ble_evt_t const* p_ble_evt) {
   bool flag = true;
   // my other advertising nordic
   // c0:98:e5:4e:xx:xx
-  // AABB
+  // AABB (note this needs to be converted to little endian)
   int find_address[6] = {0xc0, 0x98, 0xe5, 0x4e, 0xAA, 0xBB};
   for(int i=0; i < 6; i++){
     if (ble_addr[i] != find_address[5 - i]) flag = false;
