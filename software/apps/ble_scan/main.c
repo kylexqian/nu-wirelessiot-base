@@ -33,7 +33,94 @@ void ble_evt_adv_report(ble_evt_t const* p_ble_evt) {
   uint8_t* adv_buf = adv_report->data.p_data; // array of up to 31 bytes of advertisement payload data
   uint16_t adv_len = adv_report->data.len; // length of advertisement payload data
 
-  printf("Received an advertisement!\n");
+
+  /*
+  * Filter for certain devices:
+  */
+  // print address, and adv_length
+  // printf("\naddress:\n\t");
+  // for (int i=0; i < 6; i++){
+  //   printf("%x ", ble_addr[i]);
+  // }
+  // printf("\nlength:");
+  // printf("\n\t%d", adv_len);
+  // printf("\npayload:");
+
+  /*
+  * this loop prints all of the payload
+  */
+  // for (int i=0; i < adv_len; i++){
+  //   printf("%x ", adv_buf[i]);
+  // }
+
+  /*
+  * this loop parses through payload (in Length-Type-Value format) and prints
+  */
+  // for (int i=0; i < adv_len; i++){
+  //   // getting length
+  //   int length = adv_buf[i];
+  //   printf("\n");
+  //   printf("\n\tlength: %d\n", length);
+  //   for (int j=0; j < length; j++){
+  //     i++;
+  //     // getting type
+  //     if (j == 0){
+  //       printf("\ttype: \t%x\n", adv_buf[i+j]);
+  //       printf("\tvalue:\t");
+  //     }
+  //     // getting value
+  //     else{
+  //       printf("%x ", adv_buf[i+j-1]);
+  //     }
+  //   }
+  // }
+
+  /*
+  * this loop selectively prints payload based off BLE address
+  */
+  bool flag = true;
+  // my other advertising nordic
+  // c0:98:e5:4e:xx:xx
+  // AABB
+  int find_address[6] = {0xc0, 0x98, 0xe5, 0x4e, 0xAA, 0xBB};
+  for(int i=0; i < 6; i++){
+    if (ble_addr[i] != find_address[5 - i]) flag = false;
+  }
+
+  // print data
+  if (flag == true){
+    printf("Received an advertisement!");
+
+    printf("\naddress:\n\t");
+    for (int i=0; i < 6; i++){
+      printf("%x ", ble_addr[i]);
+    }
+    printf("\nlength:");
+    printf("\n\t%d", adv_len);
+    printf("\npayload:");
+
+    for (int i=0; i < adv_len; i++){
+      // getting length
+      int length = adv_buf[i];
+      printf("\n");
+      printf("\n\tlength: %d\n", length);
+      for (int j=0; j < length; j++){
+        i++;
+        // getting type
+        if (j == 0){
+          printf("\ttype: \t%x\n", adv_buf[i+j]);
+          printf("\tvalue:\t");
+        }
+        // getting value
+        else{
+          printf("%x ", adv_buf[i+j-1]);
+        }
+      }
+    }
+    printf("\n");
+    printf("\n");
+  }
+
 }
 
 
@@ -52,6 +139,3 @@ int main(void) {
     power_manage();
   }
 }
-
-
-
