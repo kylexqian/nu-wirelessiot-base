@@ -32,11 +32,11 @@ static simple_ble_service_t connection_service = {{
 // Char uuids
 static simple_ble_char_t led_state_char = {.uuid16 = 0x1089};
 static simple_ble_char_t print_state_char = {.uuid16 = 0x1090};
-// static simple_ble_char_t test_char = {.uuid16 = 0x1091};
+static simple_ble_char_t read_char = {.uuid16 = 0x1091};
 
 static bool led_state = false;
 static char print_state[16];
-static int test_state[10];
+static int read_state = 0;
 
 /*******************************************************************************
  *   State for this application
@@ -63,6 +63,8 @@ void ble_evt_write(ble_evt_t const* p_ble_evt) {
     printf("Received some text:\n");
     printf("%s\n", print_state);
   }
+
+
 }
 
 int main(void) {
@@ -78,9 +80,9 @@ int main(void) {
   simple_ble_add_service(&connection_service);
 
   // LED char
-  // simple_ble_add_characteristic(1, 1, 0, 0,
-  //     sizeof(led_state), (uint8_t*)&led_state,
-  //     &connection_service, &led_state_char);
+  simple_ble_add_characteristic(1, 1, 0, 0,
+      sizeof(led_state), (uint8_t*)&led_state,
+      &connection_service, &led_state_char);
 
   // print char
   simple_ble_add_characteristic(1, 1, 0, 0,
@@ -88,9 +90,9 @@ int main(void) {
       &connection_service, &print_state_char);
 
   // test char
-  // simple_ble_add_characteristic(1, 1, 0, 0,
-  //     sizeof(test_state), (uint8_t*)&test_state,
-  //     &connection_service, &test_char);
+  simple_ble_add_characteristic(1, 0, 1, 0,
+      sizeof(read_state), (uint8_t*)&read_state,
+      &connection_service, &read_char);
 
   // Start Advertising
   simple_ble_adv_only_name();
@@ -105,7 +107,12 @@ int main(void) {
     nrf_gpio_cfg_output(LED3);
     nrf_gpio_cfg_output(LED4);
 
+    nrf_gpio_cfg_input(BUTTON1, NRF_GPIO_PIN_PULLUP);
+    nrf_gpio_cfg_input(BUTTON2, NRF_GPIO_PIN_PULLUP);
+    nrf_gpio_cfg_input(BUTTON3, NRF_GPIO_PIN_PULLUP);
+    nrf_gpio_cfg_input(BUTTON4, NRF_GPIO_PIN_PULLUP);
 
+    // LED outputs
     if (led_state){
       nrf_gpio_pin_toggle(LED1);
       nrf_delay_ms(100);
@@ -125,5 +132,34 @@ int main(void) {
       nrf_gpio_pin_set(LED3);
       nrf_gpio_pin_set(LED4);
     }
+
+    // button inputs
+    if (!nrf_gpio_pin_read(BUTTON1)) {
+      read_state += 1;
+      printf("pressed 1");
+      nrf_delay_ms(100);
+    }
+
+    if (!nrf_gpio_pin_read(BUTTON2)) {
+      read_state += 2;
+      printf("pressed 2");
+      nrf_delay_ms(100);
+    }
+
+    if (!nrf_gpio_pin_read(BUTTON3)) {
+      read_state += 3;
+      printf("pressed 3");
+      nrf_delay_ms(100);
+    }
+
+    if (!nrf_gpio_pin_read(BUTTON4)) {
+      read_state += 4;
+      printf("pressed 4");
+      nrf_delay_ms(100);
+    }
+
+    simple_ble_notify_char(&read_char);
+    // printf("%d", read_state);
+    // nrf_delay_ms(100);
   }
 }
